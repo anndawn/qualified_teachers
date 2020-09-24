@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+    <style>
+        #container {
+        height: 500px; 
+        min-width: 310px; 
+        max-width: 800px; 
+        margin: 0 auto; 
+        }
+        .loading {
+        margin-top: 10em;
+        text-align: center;
+        color: gray;
+        }
+    </style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<script src="https://code.highcharts.com/maps/highmaps.js"></script>
+<script src="https://code.highcharts.com/maps/modules/data.js"></script>
+<script src="https://code.highcharts.com/maps/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/maps/modules/offline-exporting.js"></script>
+<script src="https://code.highcharts.com/mapdata/custom/world.js"></script>
+<script src="https://d3js.org/d3.v6.min.js"></script>
+<body>
+   
+<div id="container"></div> 
+</body>
+</html>
+<script>
+
+d3.csv("/national.csv").then(function(data0) {
+    data0.map(d=>d.value=parseFloat(d.value).toFixed(2))
+    console.log(data0);
+    Highcharts.mapChart('container', {
+      chart: {
+        map: 'custom/world',
+        borderWidth: 0.5
+      },
+      colors: [d3.interpolateRdYlBu(0.12),d3.interpolateRdYlBu(0.25),d3.interpolateRdYlBu(0.4),d3.interpolateRdYlBu(0.65),d3.interpolateRdYlBu(0.8),d3.interpolateYlGnBu(1.5)],
+      // colors: ['red', 'rgba(19,64,117,0.2)', 'rgba(19,64,117,0.4)',
+      //   'rgba(19,64,117,0.5)', 'rgba(19,64,117,0.6)', 'rgba(19,64,117,0.8)', 'rgba(19,64,117,1)'],
+
+      title: {
+        text: 'Percentage of Qualified Teachers in Primary Education'
+      },
+
+      mapNavigation: {
+        enabled: true
+      },
+
+      legend: {
+        title: {
+          text: 'Percentage of Qualified Teachers',
+          style: {
+            color: ( // theme
+              Highcharts.defaultOptions &&
+              Highcharts.defaultOptions.legend &&
+              Highcharts.defaultOptions.legend.title &&
+              Highcharts.defaultOptions.legend.title.style &&
+              Highcharts.defaultOptions.legend.title.style.color
+            ) || 'black'
+          }
+        },
+        align: 'left',
+        verticalAlign: 'bottom',
+        floating: true,
+        layout: 'vertical',
+        valueDecimals: 0,
+        backgroundColor: ( // theme
+          Highcharts.defaultOptions &&
+          Highcharts.defaultOptions.legend &&
+          Highcharts.defaultOptions.legend.backgroundColor
+        ) || 'rgba(255, 255, 255, 0.85)',
+        symbolRadius: 0,
+        symbolHeight: 14
+      },
+
+      colorAxis: {
+        // stops: color,
+        dataClassColor: 'category',
+        dataClasses: [{
+          to: 50
+        }, {
+          from: 50,
+          to: 70
+        }, {
+          from: 70,
+          to: 80
+        }, {
+          from: 80,
+          to: 90
+        }, {
+          from: 90,
+          to: 100
+        }
+      ]
+      },
+      series: [{
+        data: data0,
+        joinBy: ['iso-a3', 'code'],
+        // animation: true,
+        name: 'Percentage',
+        states: {
+          hover: {
+            color: '#a4edba'
+          }
+        },
+        tooltip: {
+          valueSuffix: '%'
+        },
+        shadow: false
+      }],
+  error: function () {
+    document.getElementById('container').innerHTML = '<div class="loading">' +
+      '<i class="icon-frown icon-large"></i> ' +
+      'Error loading data from Google Spreadsheets' +
+      '</div>'
+    }}
+    )
+  }
+)
+
+</script>
